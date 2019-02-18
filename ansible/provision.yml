@@ -1,40 +1,40 @@
-#- name: Install common deps
-#  hosts: all
-#  remote_user: pi
-#  become: true
-#  tasks:
-#    - name: Install docker repository key
-#      apt_key:
-#        id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-#        url: "https://download.docker.com/linux/debian/gpg"
-#        state: present
-#    - name: Install docker apt repository
-#      apt_repository:
-#        repo: "deb [arch=armhf] https://download.docker.com/linux/debian stretch stable"
-#        state: present
-#    - name: Update apt cache
-#      apt:
-#        update_cache: yes
-#    - name: "Install {{ item.name }}"
-#      apt:
-#        name: "{{ item.name }}"
-#      with_items:
-#        - { name: docker-ce }
-#        - { name: docker-ce-cli }
-#        - { name: containerd.io }
-#        - { name: rsync }
-#        - { name: python-pip }
-#        - { name: python-setuptools }
-#        - { name: virtualenv }
-#    - name: Add pi to docker group
-#      user:
-#        name: pi
-#        state: present
-#        groups: docker
-#        append: yes
-#    - name: Install docker-py
-#      pip:
-#        name: docker-py
+- name: Install common deps
+  hosts: all
+  remote_user: pi
+  become: true
+  tasks:
+    - name: Install docker repository key
+      apt_key:
+        id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
+        url: "https://download.docker.com/linux/debian/gpg"
+        state: present
+    - name: Install docker apt repository
+      apt_repository:
+        repo: "deb [arch=armhf] https://download.docker.com/linux/debian stretch stable"
+        state: present
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: "Install {{ item.name }}"
+      apt:
+        name: "{{ item.name }}"
+      with_items:
+        - { name: docker-ce }
+        - { name: docker-ce-cli }
+        - { name: containerd.io }
+        - { name: rsync }
+        - { name: python-pip }
+        - { name: python-setuptools }
+        - { name: virtualenv }
+    - name: Add pi to docker group
+      user:
+        name: pi
+        state: present
+        groups: docker
+        append: yes
+    - name: Install docker-py
+      pip:
+        name: docker-py
 
 - name: Copy configs
   hosts: all
@@ -46,6 +46,7 @@
         checksum: yes
         delete: yes
         recursive: yes
+        perms: yes
         src: ../../
         dest: ./home_automation
 
