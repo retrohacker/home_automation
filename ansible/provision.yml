@@ -1,56 +1,53 @@
-- name: Install Docker
-  hosts: all
-  remote_user: pi
-  become: true
-  tasks:
-    - name: Install repository key
-      apt_key:
-        id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-        url: "https://download.docker.com/linux/debian/gpg"
-        state: present
-    - name: Install apt repository
-      apt_repository:
-        repo: "deb [arch=armhf] https://download.docker.com/linux/debian stretch stable"
-        state: present
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-    - name: Install docker-ce
-      apt:
-        name: docker-ce
-    - name: Install docker-ce-cli
-      apt:
-        name: docker-ce-cli
-    - name: Install containerd
-      apt:
-        name: containerd.io
-    - name: Install python-pip
-      apt:
-        name: python-pip
-    - name: Install python-setuptools
-      apt:
-        name: python-setuptools
-    - name: Install virtualenv
-      apt:
-        name: virtualenv
-    - name: Install docker-py
-      pip:
-        name: docker-py
-    - name: Add pi to docker group
-      user:
-        name: pi
-        state: present
-        groups: docker
-        append: yes
+#- name: Install common deps
+#  hosts: all
+#  remote_user: pi
+#  become: true
+#  tasks:
+#    - name: Install docker repository key
+#      apt_key:
+#        id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
+#        url: "https://download.docker.com/linux/debian/gpg"
+#        state: present
+#    - name: Install docker apt repository
+#      apt_repository:
+#        repo: "deb [arch=armhf] https://download.docker.com/linux/debian stretch stable"
+#        state: present
+#    - name: Update apt cache
+#      apt:
+#        update_cache: yes
+#    - name: "Install {{ item.name }}"
+#      apt:
+#        name: "{{ item.name }}"
+#      with_items:
+#        - { name: docker-ce }
+#        - { name: docker-ce-cli }
+#        - { name: containerd.io }
+#        - { name: rsync }
+#        - { name: python-pip }
+#        - { name: python-setuptools }
+#        - { name: virtualenv }
+#    - name: Add pi to docker group
+#      user:
+#        name: pi
+#        state: present
+#        groups: docker
+#        append: yes
+#    - name: Install docker-py
+#      pip:
+#        name: docker-py
 
 - name: Copy configs
   hosts: all
   remote_user: pi
   tasks:
     - name: Copy project files
-      copy:
-        src: ../
-        dest: ./
+      synchronize:
+        archive: no
+        checksum: yes
+        delete: yes
+        recursive: yes
+        src: ../../
+        dest: ./home_automation
 
 - name: Setup Motion
   hosts: nannycam
@@ -62,17 +59,20 @@
         tag: motion
         force: yes
         dockerfile: NannyCam.Motion.Dockerfile
-        path: ./docker
+        path: ./home_automation/docker
     - name: Build nginx image
       docker_image:
         name: nannycam
         tag: nginx
         force: yes
         dockerfile: NannyCam.Nginx.Dockerfile
-        path: ./docker
+        path: ./home_automation/docker
     - name: Create state directory
+      become: true
       file:
-        path: /state
+        path: /state/nannycam
+        owner: pi
+        group: pi
         state: directory
     - name: Start motion image
       docker_container:
@@ -83,7 +83,8 @@
         ports:
           - "8081:8081"
         volumes:
-          - "./config/nannycam-motion:/config:ro"
+          - "./home_automation/config/nannycam-motion:/config:ro"
+          - "/state/nannycam:/state"
         devices:
           - "/dev/vchiq"
     - name: Start nginx
@@ -94,4 +95,4 @@
         ports:
           - "8080:80"
         volumes:
-          - "/state:/usr/share/nginx/html:ro"
+          - "/state/nannycam:/usr/share/nginx/html:ro"

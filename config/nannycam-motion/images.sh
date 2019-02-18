@@ -3,9 +3,9 @@
 FILE=`basename $1`
 MAX=56623104 # Store 54GB of video
 CLEAN=20 # Remove 10 oldest files when MAX is exceeded
-VIDEO_DIR=/state/nannycam/videos
-IMAGE_DIR=/state/nannycam/images
-MANIFEST=//state/nannycam/manifest.csv
+VIDEO_DIR=/state/videos
+IMAGE_DIR=/state/images
+MANIFEST=/state/manifest.csv
 mkdir -p $VIDEO_DIR $IMAGE_DIR
 USAGE=`du -s $VIDEO_DIR | sed 's/[[:space:]].*//'`
 

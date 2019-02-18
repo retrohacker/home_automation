@@ -1,1 +1,3 @@
 ansible/inventory.yml
+*.retry
+*.swp
