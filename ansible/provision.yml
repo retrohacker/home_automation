@@ -70,6 +70,10 @@
         force: yes
         dockerfile: NannyCam.Nginx.Dockerfile
         path: ./docker
+    - name: Create state directory
+      file:
+        path: /state
+        state: directory
     - name: Start motion image
       docker_container:
         name: nannycam-motion
@@ -80,6 +84,8 @@
           - "8081:8081"
         volumes:
           - "./config/nannycam-motion:/config:ro"
+        devices:
+          - "/dev/vchiq"
     - name: Start nginx
       docker_container:
         name: nannycam-nginx
@@ -88,4 +94,4 @@
         ports:
           - "8080:80"
         volumes:
-          - "./config/nannycam-motion/state:/usr/share/nginx/html:ro"
+          - "/state:/usr/share/nginx/html:ro"
