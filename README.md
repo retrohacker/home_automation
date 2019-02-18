@@ -1,12 +1,5 @@
 # Preparing a RPi image
 
-We are going to use the amazing [Adafruit TTL cable](https://www.adafruit.com/product/954) for the first part of our setup. There are two alternatives:
-
-* Hook up a keyboard and monitor to the pi
-* [Configure your RPi image to be headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) and use SSH
-
-I prefer using the cable since it's easier to get the ip address of the pi we want to point our ansible scripts at.
-
 ## Download the latest raspbian light image
 
 > Note: be nice to projects, use torrents!
@@ -23,9 +16,17 @@ I prefer using the cable since it's easier to get the ip address of the pi we wa
 
 ## Enable and Connect the serial console
 
-https://learn.adafruit.com/adafruits-raspberry-pi-lesson-5-using-a-console-cable/
+[Configure your RPi image to be headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md)
 
-Now boot and connect to the serial console
+## Boot
+
+Startup the pi and head over to your router to see what ip address it was given, then ssh in using the credentials:
+
+```
+ssh pi@[ip_address]
+username: pi
+password: raspberry
+```
 
 ## Get ready to run ansible
 
