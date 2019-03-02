@@ -34,12 +34,12 @@ While in your router's UI, you should take a moment to make this pi's IP address
 
 Use `raspi-config` to:
 
-1. set the locale to `en_US.UTF8`
-2. enable ssh
-3. connect to wifi
-4. turn on the camera (interfacing options -> camera)
-5. set the timezone to UTC
-6. change the password to something more secure
+* connect to wifi
+* set the locale to `en_US.UTF8`
+* set the timezone to UTC
+* turn on the camera (interfacing options -> camera)
+* enable ssh
+* change the password to something more secure
 
 Next, use `scp` to copy your `~/.ssh/id_ed25519.pub` file to the `~/.ssh/authorized_keys` file on the pi.
 
